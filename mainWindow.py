@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QApplication,QWidget,\
                 QInputDialog,QMessageBox,QHBoxLayout,\
                 QMouseEventTransition
 from PyQt5.QtGui import QIcon,QFont,QPixmap,QColor,QBrush
-from PyQt5 import QtGui,Qt
+from PyQt5 import QtGui,Qt,QtCore
 import pyglet
 from xlrd import open_workbook
 from acount import write_excel,creat_excel,Add_money
@@ -17,8 +17,8 @@ btn_y = 560
 btn_x0 = 750
 btn_y0 = 10
 
-le_Edit_x = 160
-le_Edit_y = 200
+le_Edit_x = 200
+le_Edit_y = 150
 
 class mainWindow(QWidget):
     def __int__(self):
@@ -67,14 +67,15 @@ class mainWindow(QWidget):
         self.btn_ok.clicked.connect(self.btn_Ok)
         self.btn_no.clicked.connect(self.btn_No)
         self.btn_close.clicked.connect(self.closeEvent)
-
+        self.btn_Max.clicked.connect(self.window_max)
+        self.btn_Min.clicked.connect(self.window_min)
         #self.la_money.move(self.le_money.x()+self.le_money.size().width(),)
         self.le_money = QLineEdit(self)
         self.le_remark = QLineEdit(self)
         self.la_allmony = QLabel(self)
         self.le_money.move(le_Edit_x,le_Edit_y-55)
-        self.le_remark.move(le_Edit_x,le_Edit_y+80)
-        self.la_allmony.move(le_Edit_x+400,le_Edit_y-55)
+        self.le_remark.move(le_Edit_x+450,le_Edit_y-55)
+        self.la_allmony.move(le_Edit_x-50,le_Edit_y+180)
         self.la_allmony.resize(320,30)
         self.le_remark.resize(320, 90)
         self.le_money.resize(320,30)
@@ -100,7 +101,7 @@ class mainWindow(QWidget):
         #self.setWindowOpacity(80)
 
 
-
+    #确认按钮
     def btn_Ok(self):
         money = self.le_money.text()
         remark = self.le_remark.text()
@@ -113,10 +114,15 @@ class mainWindow(QWidget):
             write_excel(money, remark)
 
         self.la_allmony.setText(str(Add_money()))
+    #放弃按钮
     def btn_No(self):
         print('放弃')
-
-
+    #窗口放大
+    def window_max(self):
+        self.showMaximized()
+    #窗口缩小
+    def window_min(self):
+        self.showMinimized()
     def closeEvent(self,event):
         reply = QMessageBox.question(self,"Message","确认退出吗？",QMessageBox.Yes | QMessageBox.No,QMessageBox.No)
         if reply == QMessageBox.Yes:
@@ -128,9 +134,16 @@ class mainWindow(QWidget):
             print("b")
         if self.releaseMouse():
             print("a")
+    def mouseMoveEvent(self,QMouseEvent):
+        print(QMouseEvent.x());
+        print(QMouseEvent.y());
+        self.move(QMouseEvent.globalX()-self.m_x,QMouseEvent.globalY() - self.m_y)
+    def mousePressEvent(self, QMouseEvent):
+        self.ok = True
+        self.m_x = QMouseEvent.globalX() - self.pos().x()
+        self.m_y = QMouseEvent.globalY() - self.pos().y()
 
     def Gif(self):
-
         self.animation = pyglet.resource.animation('./source/gif.gif')
         self.sprite = pyglet.sprite.Sprite(self.animation)
         self.win = pyglet.window.Window(width=self.sprite,height=self.sprite)
