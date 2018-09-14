@@ -65,6 +65,13 @@ def Add_money():
         all_money = all_money+int(sheet1.row_values(data)[1])
         #print(all_money)
     return all_money
+def day_mony():
+    excel = xlrd.open_workbook('account.xls',encoding_override='utf8')
+    sheet1 = excel.sheets()[0] #打开第一张表
+    row = sheet1.nrows
+    for data in range(1,row):
+        Data[data] = int(sheet1.row_values(data)[1])
+    return Data
 def write_excel(money,remark):
     excel = xlrd.open_workbook('account.xls', encoding_override='utf8')
     print(excel)
